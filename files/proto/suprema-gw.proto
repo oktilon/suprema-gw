@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.getdefigo.suprema.gateway";
+option java_outer_classname = "SupremaGatewayProto";
+option objc_class_prefix = "SGP";
+
+package gateway;
+
+service SupremaGateway {
+    rpc DebugCommand (DebugRequest) returns (DebugReply) {}
+    rpc DeviceSocket (stream DeviceMessage) returns (stream DeviceMessage) {}
+}
+
+message DebugRequest {
+    string cmd = 1;
+    optional string arg = 2;
+}
+
+message DebugReply {
+    string answer = 1;
+}
+
+message RelayData {
+    uint32 dev = 1;
+    uint32 tm = 2;
+}
+
+message DeviceMessage {
+    uint32 dev = 1; // Device ID
+    string msg = 2; // Message
+    optional string str = 3; // string arg
+    optional uint64 num = 4; // uint arg
+    optional RelayData ext = 5; // External relay
+}
+

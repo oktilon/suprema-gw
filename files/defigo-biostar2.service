@@ -1,0 +1,17 @@
+[Unit]
+Description=Defigo gateway service, implements communication with back-end
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=@executable@
+
+StandardOutput=append:/var/log/defigo/gateway.log
+StandardError=append:/var/log/defigo/gateway.log
+
+[Install]
+WantedBy=multi-user.target

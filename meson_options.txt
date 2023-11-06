@@ -1,0 +1,1 @@
+option('grpc_root', value : '/home/denis/.local', type : 'string', description : 'Root folder for gRPC')
