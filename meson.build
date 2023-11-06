@@ -39,49 +39,18 @@ configure_file(
     command : ['cp', '@INPUT@', '@OUTPUT@'],
 )
 
-# Definitions
-# add_project_arguments('-DSIO_TLS', language: 'cpp')
-# add_project_arguments('-DSIO_ECHO', language: 'cpp')
-# add_project_arguments('-DASIO_STANDALONE', language: 'cpp')
-# # asio uses OpenSSL functions deprecated in OpenSSL 3.0 (suppress warnings)
-# add_project_arguments('-Wno-deprecated-declarations', language: 'cpp')
-# add_project_arguments('-DDEFAULT_SERVER="' + server + '"', language: 'cpp')
-# add_project_arguments('-DDEFAULT_UUID="' + uuid + '"', language: 'cpp')
-
-grpc_cc = custom_target(
-    'grpc_cc',
-    input: proto_file,
-    output: [
-        'suprema-gw.pb.h',
-        'suprema-gw.pb.cc',
-        'suprema-gw.grpc.pb.h',
-        'suprema-gw.grpc.pb.cc'
-    ],
-    command: [
-        protoc,
-        '--grpc_out', build_dir,
-        '--cpp_out', build_dir,
-        '-I', proto_path,
-        '--plugin=protoc-gen-grpc=' + proto_cpp_plugin.full_path(),
-        proto_file
-    ]
-)
-
 # Includes
 inc = include_directories([
     'include',
     'include/biostar2sdk',
     'include/biostar2sdk/BSCommon',
-    grpc_root / 'include'
 ])
 
 # Sources
 src = [
     'src/common.cpp',
     'src/server.cpp',
-    'src/grpc.cpp',
     'src/app.cpp',
-    grpc_cc
 ]
 
 # Dependencies
@@ -89,46 +58,6 @@ deps = [
     dependency('libssl'),
     dependency('libcrypto'),
     dependency('threads'),
-    dependency('protobuf'),
-    dependency('grpc'),
-    dependency('grpc++'),
-    dependency('re2'),
-    dependency('absl_flags'),
-    dependency('absl_flags_parse'),
-    dependency('absl_absl_check'),
-    dependency('absl_absl_log'),
-    dependency('absl_algorithm'),
-    dependency('absl_base'),
-    dependency('absl_bind_front'),
-    dependency('absl_bits'),
-    dependency('absl_btree'),
-    dependency('absl_cleanup'),
-    dependency('absl_cord'),
-    dependency('absl_core_headers'),
-    dependency('absl_debugging'),
-    dependency('absl_die_if_null'),
-    dependency('absl_dynamic_annotations'),
-    dependency('absl_flat_hash_map'),
-    dependency('absl_flat_hash_set'),
-    dependency('absl_function_ref'),
-    dependency('absl_hash'),
-    dependency('absl_layout'),
-    dependency('absl_log_initialize'),
-    dependency('absl_log_severity'),
-    dependency('absl_memory'),
-    dependency('absl_node_hash_map'),
-    dependency('absl_node_hash_set'),
-    dependency('absl_optional'),
-    dependency('absl_span'),
-    dependency('absl_status'),
-    dependency('absl_statusor'),
-    dependency('absl_strings'),
-    dependency('absl_synchronization'),
-    dependency('absl_time'),
-    dependency('absl_type_traits'),
-    dependency('absl_utility'),
-    dependency('absl_variant'),
-    dependency('grpc++_reflaction'),
 ]
 
 
@@ -141,6 +70,5 @@ executable(
     dependencies : deps,
     link_args : [
         '-Wl,libBS_SDK_V2.so',
-        '-Wl,--no-as-needed'
     ]
 )
