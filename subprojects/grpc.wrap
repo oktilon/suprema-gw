@@ -1,0 +1,6 @@
+[wrap-git]
+
+url = https://github.com/grpc/grpc.git
+revision = master
+depth = 1
+clone-recursive = true

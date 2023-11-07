@@ -39,8 +39,9 @@ popd
 > Important! It's **strongly** encourage you to install gRPC locally — using an appropriately set ```CMAKE_INSTALL_PREFIX``` — because there is no easy way to uninstall gRPC after you’ve installed it globally.
 
 ## 2. Build project
-Before configure project, we need to add .local path to PKG_CONFIG_PATH
+Before configure project, we need to add .local path to PKG_CONFIG_PATH and specify g++ compiler
 ``` bash
+export CXX=g++
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:$HOME/.local/lib/pkgconfig
 ```
 

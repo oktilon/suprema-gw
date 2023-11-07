@@ -1,7 +1,7 @@
 project(
     'bio2server', 'cpp',
     version : '0.1.0',
-    meson_version : '>= 0.55.0',
+    meson_version : '>= 0.62.0',
     default_options: [
         'cpp_std=c++17'
     ])
@@ -11,7 +11,10 @@ message('grpc_root=', grpc_root)
 # uuid = get_option('uuid')
 # message('uuid=', uuid)
 
+cmake = import('cmake')
+
 grpc_bin = grpc_root / 'bin'
+grpc_lib = grpc_root / 'lib'
 protoc = grpc_bin / 'protoc'
 cpp_plugin_def = grpc_bin / 'grpc_cpp_plugin'
 build_dir = meson.current_build_dir()
@@ -19,6 +22,8 @@ src_dir = meson.current_source_dir()
 proto_path = src_dir / 'files' / 'proto'
 proto_file = proto_path / 'suprema-gw.proto'
 proto_cpp_plugin = find_program ('grpc_cpp_plugin', cpp_plugin_def)
+grpc_reflection = grpc_lib / 'libgrpc++_reflection.a'
+
 
 
 # Header file config
@@ -39,14 +44,11 @@ configure_file(
     command : ['cp', '@INPUT@', '@OUTPUT@'],
 )
 
+grpc_sub = cmake.subproject('grpc')
+grpc_dep = grpc_sub.dependency('grpc++')
+
 # Definitions
 # add_project_arguments('-DSIO_TLS', language: 'cpp')
-# add_project_arguments('-DSIO_ECHO', language: 'cpp')
-# add_project_arguments('-DASIO_STANDALONE', language: 'cpp')
-# # asio uses OpenSSL functions deprecated in OpenSSL 3.0 (suppress warnings)
-# add_project_arguments('-Wno-deprecated-declarations', language: 'cpp')
-# add_project_arguments('-DDEFAULT_SERVER="' + server + '"', language: 'cpp')
-# add_project_arguments('-DDEFAULT_UUID="' + uuid + '"', language: 'cpp')
 
 grpc_cc = custom_target(
     'grpc_cc',
@@ -65,6 +67,11 @@ grpc_cc = custom_target(
         '--plugin=protoc-gen-grpc=' + proto_cpp_plugin.full_path(),
         proto_file
     ]
+)
+
+grpc_lib = library(
+    'libsuprema_grpc_proto.a',
+    grpc_cc
 )
 
 # Includes
@@ -88,11 +95,12 @@ src = [
 deps = [
     dependency('libssl'),
     dependency('libcrypto'),
+    dependency('re2'),
     dependency('threads'),
+    dependency('dl'),
     dependency('protobuf'),
     dependency('grpc'),
     dependency('grpc++'),
-    dependency('re2'),
     dependency('absl_flags'),
     dependency('absl_flags_parse'),
     dependency('absl_absl_check'),
@@ -128,7 +136,6 @@ deps = [
     dependency('absl_type_traits'),
     dependency('absl_utility'),
     dependency('absl_variant'),
-    dependency('grpc++_reflaction'),
 ]
 
 
@@ -141,6 +148,7 @@ executable(
     dependencies : deps,
     link_args : [
         '-Wl,libBS_SDK_V2.so',
-        '-Wl,--no-as-needed'
+        grpc_reflection,
+        '-ldl'
     ]
 )

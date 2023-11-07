@@ -154,7 +154,6 @@ int main(int argc, char *argv[]) {
 
     r = server_init (clean, logIndex, logMax);
     if (r) {
-        // grpc_init (argc, argv);
         r = grpc_run ();
     }
 
